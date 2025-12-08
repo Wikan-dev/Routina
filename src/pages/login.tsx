@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { supabase } from "../supabaseClient";
+import { supabase } from "../client/supabaseClient";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -40,7 +40,7 @@ export default function Login() {
     }
 
     const uid = data.user?.id;
-    nav(/user/${uid});
+    nav(`/user/${uid}`);
   };
 
   return (

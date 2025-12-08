@@ -10,7 +10,10 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.86.2",
+<<<<<<< HEAD
+=======
     "@tailwindcss/vite": "^4.1.17",
+>>>>>>> c21ec3fafaeb6753530dc7a72f067022f4c8a770
     "axios": "^1.13.2",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",

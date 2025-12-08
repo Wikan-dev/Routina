@@ -32,7 +32,7 @@ export default function Page1() {
             <div className="h-20 w-auto max-w-500 absolute top-12 left-12 flex items-center gap-10 flex-row">
                 <div className='rounded-full border-2 border-[#DFDFDF] w-20 h-20 bg-[#DFDFDF] cursor-pointer' onClick={() => setMenuOpen(!menuOpen)}>
                     <Menu isOpen={menuOpen} onClose={() => setMenuOpen(false)}>
-                        <h2 className="text-xl font-bold mb-4">Menu</h2>
+                        <h2 className="text-xl font-bold mb-10 mt-10">Menu</h2>
                         <ul className="space-y-10">
                             <li>Profile</li>
                             <li>Help</li>

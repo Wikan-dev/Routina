@@ -1,6 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = "https://xxxx.supabase.co"; // isi dari dashboard
-const supabaseAnonKey = "public-anon-key";      // isi dari dashboard
+// Supabase configuration dari environment
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "https://qanrkuwjetvetnzncdin.supabase.co";
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+if (!supabaseAnonKey) {
+  console.error("VITE_SUPABASE_ANON_KEY is not set in .env.local");
+}
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey || "");

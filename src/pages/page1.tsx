@@ -1,8 +1,11 @@
 import '../App.css';
 import arrow from '../assets/icon/arrow.svg'
 import { motion } from 'motion/react';
+import { useEffect, useState } from 'react';
+import { supabase } from '../client/supabaseClient';
 import habits from '../../backend/data/habits.json';
 import habit_logs from '../../backend/data/habit_logs.json';
+import profile from '../../backend/data/profile.json';
 
 const habitData = (dateStr: string) => {
     const d = new Date(dateStr);
@@ -14,6 +17,34 @@ const habitData = (dateStr: string) => {
 }
 
 export default function Page1() {
+    const [username, setUsername] = useState("User");
+
+    useEffect(() => {
+        const getUsername = async () => {
+            // Ambil session user yang login
+            const { data: { session }, error } = await supabase.auth.getSession();
+            
+            if (error || !session?.user?.id) {
+                console.error("No session found:", error);
+                return;
+            }
+
+            // Cari profile berdasarkan user_id dari Supabase
+            const userId = session.user.id;
+            const userProfile = (profile as Array<{user_id: string; name: string}>).find((p) => p.user_id === userId);
+            
+            if (userProfile) {
+                setUsername(userProfile.name);
+                console.log("Username set to:", userProfile.name);
+            } else {
+                console.warn("Profile not found for user_id:", userId);
+                setUsername("User");
+            }
+        };
+
+        getUsername();
+    }, []);
+
     const totalHabits = habits.filter((h) => h.active).length;
     const TARGET = 7;
     const totalTarget = totalHabits * TARGET;
@@ -26,7 +57,7 @@ export default function Page1() {
         <div className="bg-white w-full h-screen flex flex-col justify-start items-start">
             <div className="h-20 w-auto max-w-500 absolute top-12 left-12 flex items-center gap-10 flex-row">
                 <div className='rounded-full border-2 border-[#DFDFDF] w-20 h-20 bg-[#DFDFDF]'></div>
-                <h1 className='text-[30px] font-bold'>Hey There, User</h1>
+                <h1 className='text-[30px] font-bold'>Hey There <span>{username}</span></h1>
             </div>
             <p className='text-black opacity-50 absolute top-40 left-12 text-[18px]'>5 hrs 42 mins till bed time</p>
             <div className="    w-auto h-18 absolute top-55 left-12 flex justify-center items-center gap-4 flex-row">

@@ -27,6 +27,22 @@ export default function Page1() {
         100
     );
     const [menuOpen, setMenuOpen] = useState(false);
+
+    // Ambil username dari localStorage
+    const getUsername = () => {
+        const profileStr = localStorage.getItem("user_profile");
+        if (profileStr) {
+            try {
+                const profile = JSON.parse(profileStr);
+                return profile.name || "User";
+            } catch (err) {
+                console.error("Error parsing profile:", err);
+            }
+        }
+        return "User";
+    };
+
+    const username = getUsername();
     return (
         <div className="bg-white w-full h-screen flex flex-col justify-start items-start">
             <div className="h-20 w-auto max-w-500 absolute top-12 left-12 flex items-center gap-10 flex-row">
@@ -41,7 +57,7 @@ export default function Page1() {
                         </ul>
                     </Menu>
                 </div>
-                <h1 className='text-[30px] font-bold'>Hey There, User</h1>
+                <h1 className='text-[30px] font-bold'>Hey There, {username}</h1>
             </div>
             <p className='text-black opacity-50 absolute top-40 left-12 text-[18px]'>5 hrs 42 mins till bed time</p>
             <div className="w-[60%] h-auto absolute mt-50 left-12 flex justify-between items-center flex-row">

@@ -38,6 +38,8 @@ const supabase = createClient(SUPABASE_URL, SERVICE_KEY, {
 // ▶ UTILITY FUNCTIONS ===================================================
 
 const profileFilePath = path.resolve(__dirname, "./data/profile.json");
+const habitsFilePath = path.resolve(__dirname, "./data/habits.json");
+const habitLogsFilePath = path.resolve(__dirname, "./data/habit_logs.json");
 
 const loadProfiles = () => {
   try {
@@ -87,6 +89,131 @@ const createProfileWithUserId = (userId, name) => {
 };
 
 // ▶ ROUTES ===================================================
+
+app.put('/habit', (req, res) => {
+  const { id, title, description } = req.body;
+  
+  if (!id) {
+    return res.status(400).json({ error: "ID habit diperlukan" });
+  }
+
+  const raw = fs.readFileSync(habitsFilePath);
+  const data = JSON.parse(raw);
+  let changed = false;
+
+  const habit = data.habits.find(h => h.id === id);
+  
+  if (!habit) {
+    return res.status(404).json({ error: "Habit tidak ditemukan" });
+  }
+
+  if (title) {
+    habit.title = title;
+    changed = true;
+  } 
+  if (description) {
+    habit.description = description;
+    changed = true;
+  }
+  if (!changed) {
+    return res.status(400).json({ error: "Tidak ada data untuk diupdate" });
+  }
+
+  fs.writeFileSync(habitsFilePath, JSON.stringify(data, null, 2));
+
+  res.json({ message: "Habit updated", habit });  
+});
+
+app.put('/habit/done', (req, res) => {
+  const { id, day } = req.body;
+  if (!id || !day) {
+    return res.status(400).json({ error: "ID dan day diperlukan" });
+  }
+
+  const raw = fs.readFileSync(habitsFilePath);  
+  const data = JSON.parse(raw);
+  const habit = data.habits.find(h => h.id === id); 
+
+  if (!habit) {
+    return res.status(404).json({ error: "Habit tidak ditemukan" });
+  }
+  if (day < 1 || day > 7) {
+    return res.status(400).json({ error: "Day harus antara 1-7" });
+  }
+
+  if (habit.week[day - 1] === "not_done") {
+    habit.week[day - 1] = "done";
+  } else {
+    return res.status(400).json({ error: "Habit sudah ditandai done" });
+  }
+
+  fs.writeFileSync(habitsFilePath, JSON.stringify(data, null, 2));
+
+  res.json({ message: "Habit marked as done", habit });
+})
+
+
+app.post("/auth/add_habit", async (req, res) => {
+  try {
+    const { title, description, days, color } = req.body;
+    
+    // Validasi required fields
+    if (!title || !description || !Array.isArray(days)) {
+      return res.status(400).json({ error: "Title, description, dan days (array) diperlukan" });
+    }
+    
+    // Validasi dan process color
+    let habitColor = "#3B82F6"; // Blue default
+    
+    if (color) {
+      // Bersihkan color string (hapus # jika ada)
+      const cleanColor = color.toString().replace('#', '').trim();
+      
+      // Validasi format hex (3 atau 6 karakter)
+      if (!/^[0-9A-F]{3}([0-9A-F]{3})?$/i.test(cleanColor)) {
+        return res.status(400).json({ 
+          error: "Format color tidak valid. Gunakan format hex tanpa #, contoh: FF5733 atau F57" 
+        });
+      }
+      
+      // Tambahkan # ke depan
+      habitColor = `#${cleanColor.toUpperCase()}`;
+    }
+    
+    let week = Array(7).fill("none");
+    days.forEach((day) => {
+      const dayNum = parseInt(day);
+      if (dayNum >= 1 && dayNum <= 7) {
+        week[dayNum - 1] = "not_done";
+      }
+    });
+
+    const habit = {
+      id: crypto.randomBytes(8).toString("hex"),
+      title,
+      description,
+      week,
+      color: habitColor,
+      created_at: new Date().toISOString(),
+    };
+
+    const raw = fs.readFileSync(habitsFilePath);
+    const data = JSON.parse(raw);
+
+    data.habits.push(habit);
+
+    fs.writeFileSync(habitsFilePath, JSON.stringify(data, null, 2));
+
+    res.json({ 
+      message: "Habit berhasil ditambahkan", 
+      habit 
+    });
+
+  } catch (err) {
+    console.error("Add habit error:", err);
+    res.status(500).json({ error: "Internal server error: " + err.message });
+  }
+});
 
 // Signup pakai email, password & nama
 app.post("/auth/signup", async (req, res) => {

@@ -118,8 +118,8 @@ export default function Login() {
   };
 
   return (
-
-    <div className="border-2 border-[#DFDFDF] rounded-3 w-[40%] h-[550px] flex flex-col justify-start mx-auto p-10 mt-20 text-left max-[429px]:w-[100%] max-[429px]:mt-0 max-[429px]:h-screen">
+    <div className="w-full h-screen overflow-hidden bg-radial-[at_25%_25%] from-[#8CE4FF] to-[#007BFF]">
+    <motion.div className="bg-white border-2 border-[#DFDFDF] rounded-3 w-[40%] h-[550px] flex flex-col justify-start mx-auto p-10 mt-20 text-left max-[429px]:w-[100%] max-[429px]:mt-0 max-[429px]:h-screen shadow-xl " initial={{opacity: 0}} animate={{opacity: 1}} transition={{duration: 0.5}}>
       <h1 className="font-bold text-[48px] max-[429px]:mt-[-10px]">{isSignup ? "Sign-in" : "Login"}</h1>
       {isSignup && (
         <>
@@ -170,6 +170,7 @@ export default function Login() {
           </motion.button>
         </>
       )}
+    </motion.div>
     </div>
   );
 }

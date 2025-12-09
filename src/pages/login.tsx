@@ -2,6 +2,7 @@ import { useState } from "react";
 import { supabase } from "../client/supabaseClient";
 import axios from "axios";
 import { useNavigate } from "react-router";
+import { motion } from "motion/react";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -117,26 +118,30 @@ export default function Login() {
   };
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>{isSignup ? "Daftar" : "Login"}</h1>
 
+    <div className="border-2 border-[#DFDFDF] rounded-3 w-[40%] h-[550px] flex flex-col justify-start mx-auto p-10 mt-20 text-left max-[429px]:w-[100%] max-[429px]:mt-0 max-[429px]:h-screen">
+      <h1 className="font-bold text-[48px] max-[429px]:mt-[-10px]">{isSignup ? "Sign-in" : "Login"}</h1>
       {isSignup && (
         <>
+          <p className="font-medium text-[20px]">Username</p>
           <input
-            placeholder="nama"
+            className="w-auto h-[50px] text-[20px] border-2 border-[#DFDFDF] rounded-2 p-2"
+            placeholder="Input username"
             value={name}
             onChange={(e) => setName(e.target.value)}
           /><br />
         </>
       )}
-
+      <p className="font-medium text-[20px]">Email</p>
       <input
+        className="w-auto h-[50px] text-[20px] border-2 border-[#DFDFDF] rounded-2 p-2"
         placeholder="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       /><br />
-
+      <p className="font-medium text-[20px]">Password</p>
       <input
+        className="w-auto h-[50px] text-[20px] border-2 border-[#DFDFDF] rounded-2 p-2"
         placeholder="password"
         type="password"
         value={password}
@@ -145,20 +150,24 @@ export default function Login() {
 
       {isSignup ? (
         <>
-          <button onClick={handleSignup} disabled={loading}>
-            {loading ? "Loading..." : "Daftar"}
-          </button>
-          <button  onClick={() => setIsSignup(false)}>Kembali ke Login</button>
+          <p className="text-[20px] font-medium">Already have an account?
+            <button onClick={() => setIsSignup(false)} className="cursor-pointer relative ml-5 text-blue-500 max-[429px]:ml-5">Login</button>
+          </p>
+          <motion.button onClick={handleSignup} disabled={loading} className="relative border-2 h-8 border-[#DFDFDF] rounded-3 w-20 ml-auto h-10 mt-auto cursor-pointer font-medium" whileHover={{scale:1.05}} whileTap={{scale: 0.92}}>
+            {loading ? "Loading..." : "Sign-in"}
+          </motion.button>
         </>
       ) : (
         <>
-          <button onClick={loginEmail} disabled={loading}>
+          <p className="text-[20px] font-medium">Don't have an account?
+            <button onClick={() => setIsSignup(true)} className="cursor-pointer relative ml-5 text-blue-500 max-[429px]:ml-5">Sign up</button>
+          </p>
+          <button onClick={loginGuest} disabled={loading} className="cursor-pointer relative mr-auto mt-5 text-blue-500 font-medium max-[429px]:ml-5">
+            {loading ? "Loading..." : "Or continue as Guest"}
+          </button>
+          <motion.button onClick={loginEmail} disabled={loading}  className="relative border-2 h-8 border-[#DFDFDF] rounded-3 w-20 ml-auto h-10 mt-auto cursor-pointer font-medium" whileHover={{scale:1.05}} whileTap={{scale: 0.92}}>
             {loading ? "Loading..." : "Login"}
-          </button>
-          <button onClick={loginGuest} disabled={loading}>
-            {loading ? "Loading..." : "Continue as Guest"}
-          </button>
-          <button onClick={() => setIsSignup(true)}>Belum punya akun? Daftar</button>
+          </motion.button>
         </>
       )}
     </div>

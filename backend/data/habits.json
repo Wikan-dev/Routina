@@ -1,68 +1,20 @@
 {
   "habits": [
     {
-      "id": "be43c47a2eebdb56",
-      "title": "Ngoding",
-      "description": "Programming 2 jam",
-      "week": [
-        "not_done",
-        "none",
-        "done",
-        "none",
-        "not_done",
-        "none",
-        "not_done"
-      ],
-      "color": "#FF0000",
-      "created_at": "2025-12-09T03:40:08.097Z"
-    },
-    {
-      "id": "458d2b44c22627c9",
-      "title": "baca buku",
-      "description": "membaca buku sore hari",
-      "week": [
-        "none",
-        "not_done",
-        "none",
-        "none",
-        "not_done",
-        "none",
-        "not_done"
-      ],
-      "color": "#00FF00",
-      "created_at": "2025-12-09T04:40:02.201Z"
-    },
-    {
-      "id": "78225bcf84c6ba2c",
-      "title": "robotik",
-      "description": "ngoding robot",
+      "id": "904d19c72b4dc69a",
+      "title": "ngoding",
+      "description": "belajar ngoding 2 jam",
       "week": [
         "not_done",
         "not_done",
         "not_done",
-        "not_done",
-        "not_done",
-        "none",
-        "none"
-      ],
-      "color": "#0000FF",
-      "created_at": "2025-12-09T08:01:31.746Z"
-    },
-    {
-      "id": "fe3ff3bb77a23ddd",
-      "title": "wiwiwiw",
-      "description": "adfasdasdf",
-      "week": [
-        "not_done",
         "none",
         "not_done",
-        "not_done",
-        "none",
         "not_done",
         "not_done"
       ],
-      "color": "#FF0000",
-      "created_at": "2025-12-10T04:16:15.201Z"
+      "color": "#00E5FF",
+      "created_at": "2025-12-10T09:27:39.022Z"
     }
   ]
 }

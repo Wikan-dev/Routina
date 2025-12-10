@@ -4,6 +4,8 @@ import axios from "axios";
 import { useNavigate } from "react-router";
 import { motion } from "motion/react";
 import { Eye, EyeOff } from "lucide-react";
+import ErrorMSG from "../component/error";
+import Loading from "../component/loading";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -12,6 +14,7 @@ export default function Login() {
   const [name, setName] = useState("");
   const [isSignup, setIsSignup] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errorMSG, setErrorMSG] = useState("");
   const nav = useNavigate();
 
   const handleSignup = async () => {
@@ -37,8 +40,7 @@ export default function Login() {
       const errorMsg = err instanceof axios.AxiosError 
         ? err.response?.data?.error || err.message 
         : (err instanceof Error ? err.message : "Unknown error");
-      console.error("Signup error:", err);
-      alert("Signup failed: " + errorMsg);
+      setErrorMSG("Signup error: " + errorMsg);
     } finally {
       setLoading(false);
     }
@@ -58,7 +60,7 @@ export default function Login() {
       });
 
       if (error) {
-        alert("Login gagal: " + error.message);
+       setErrorMSG("Login failed: " + error.message);
         return;
       }
 
@@ -79,7 +81,7 @@ export default function Login() {
         ? err.response?.data?.error || err.message 
         : (err instanceof Error ? err.message : "Unknown error");
       console.error("Login error:", err);
-      alert("Login error: " + errorMsg);
+      setErrorMSG("Login error: " + errorMsg);
     } finally {
       setLoading(false);
     }
@@ -121,6 +123,16 @@ export default function Login() {
 
   return (
     <div className="w-full h-screen overflow-hidden bg-radial-[at_25%_25%] from-[#8CE4FF] to-[#007BFF]">
+      <div className="flex justify-center"> 
+        {errorMSG && <ErrorMSG erorMSG={errorMSG} onClick={() => setErrorMSG(false)} />}
+      </div>
+
+      {loading && (
+        <div className="fixed inset-0 bg-black/15 flex items-center justify-center z-50">
+          <Loading />
+        </div>
+      )}
+
     <motion.div className="bg-white border-2 border-[#DFDFDF] rounded-3 w-[40%] h-[550px] flex flex-col justify-start mx-auto p-10 mt-20 text-left max-[429px]:w-[100%] max-[429px]:mt-0 max-[429px]:h-screen shadow-xl " initial={{opacity: 0}} animate={{opacity: 1}} transition={{duration: 0.5}}>
       <h1 className="font-bold text-[48px] max-[429px]:mt-[-10px]">{isSignup ? "Sign-in" : "Login"}</h1>
       {isSignup && (

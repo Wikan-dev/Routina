@@ -60,7 +60,7 @@ const Card: React.FC<DailyCardProps> = ({
               {habit.todayStatus === "done" ? (
                 <motion.button
                   onClick={() => onUpdate(habit.id, "not_done")}
-                  className="px-3 ml-70 mt-3 py-1 bg-red-400 text-white rounded"
+                  className="px-3 ml-70 mt-4 py-1 text-white rounded"
                   transition={{ duration: 0.45, ease: "easeInOut" }}
                 >
                   Undo
@@ -68,7 +68,7 @@ const Card: React.FC<DailyCardProps> = ({
               ) : (
                 <motion.button
                   onClick={() => onUpdate(habit.id, "done")}
-                  className="px-3 py-1 mt-3 border-2 border-gray-300 text-blue-400 rounded"
+                  className="px-3 py-1 mt-3 border-2 bg-white border-gray-300 text-blue-400 rounded"
                 >
                   Mark complete
                 </motion.button>

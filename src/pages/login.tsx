@@ -3,8 +3,10 @@ import { supabase } from "../client/supabaseClient";
 import axios from "axios";
 import { useNavigate } from "react-router";
 import { motion } from "motion/react";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
+  const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -14,7 +16,7 @@ export default function Login() {
 
   const handleSignup = async () => {
     if (!email || !password || !name) {
-      alert("Email, password, dan nama harus diisi");
+      alert("Email, password, and username must be filled");
       return;
     }
 
@@ -140,14 +142,23 @@ export default function Login() {
         onChange={(e) => setEmail(e.target.value)}
       /><br />
       <p className="font-medium text-[20px]">Password</p>
-      <input
-        className="w-auto h-[50px] text-[20px] border-2 border-[#DFDFDF] rounded-2 p-2"
-        placeholder="password"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      /><br />
-
+      <div className="relative">
+        <input
+          className="w-full h-[50px] text-[20px] border-2 border-[#DFDFDF] rounded-2 p-2 pr-12"
+          placeholder="password"
+          type={showPassword ? "text" : "password"}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button
+          type="button"
+          onClick={() => setShowPassword(!showPassword)}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black transition"
+        >
+          {showPassword ? <Eye size={25} /> : <EyeOff size={25} />}
+        </button>
+      </div>
+      <br />
       {isSignup ? (
         <>
           <p className="text-[20px] font-medium">Already have an account?

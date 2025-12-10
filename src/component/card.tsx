@@ -1,4 +1,16 @@
 import React from "react";
+import { motion } from "framer-motion";
+import { X } from "lucide-react";
+
+
+function hexToRgb(hex: string) {
+  const clean = hex.replace("#", "");
+  const r = parseInt(clean.slice(0, 2), 16);
+  const g = parseInt(clean.slice(2, 4), 16);
+  const b = parseInt(clean.slice(4, 6), 16);
+  return `${r} ${g} ${b}`;
+}
+
 
 interface DailyCardProps {
   habits: HabitToday[];
@@ -12,6 +24,7 @@ interface HabitToday {
   id: string;
   title: string;
   description: string;
+  color: string;
   todayStatus: "done" | "not_done" | "none";
 }
 
@@ -29,31 +42,39 @@ const Card: React.FC<DailyCardProps> = ({
 
       <div className="flex flex-col gap-4">
         {habits.map((habit) => (
-          <div
+          <motion.div
             key={habit.id}
-            className="p-4 rounded-xl border shadow-sm flex justify-between items-center"
+            style={{"--habit-color": habit.color, "--habit-rgb": hexToRgb(habit.color)} as React.CSSProperties}
+            initial={false}
+            animate={{ backgroundColor: habit.todayStatus === "done" ? `rgb(${hexToRgb(habit.color)})` : "rgb(255 255 255)"}}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            className="relative overflow-hidden h-auto rounded-xl p-4 border-l-[6px] border-[var(--habit-color)] "
           >
-            <div>
-              <div className="font-bold">{habit.title}</div>
-              <div className="text-sm opacity-70">{habit.description}</div>
-            </div>
+            <motion.div className="absolute inset-0 z-0" initial={{ scaleX: 0 }} animate={{scaleX: habit.todayStatus === "done" ? 1 : 0,}} transition={{ duration: 0.45, ease: "easeInOut" }} style={{backgroundColor: habit.color, transformOrigin: "left", }}/>
+            <div className="relative z-10 p-1 flex flex-col gap-3 w-full">
+              <div>
+                <div className={`font-medium text-[30px] ${habit.todayStatus === "done" ? "text-white" : ""}`}>{habit.title}</div>
+                <div className={`font-small ${habit.todayStatus === "done" ? "text-white/80" : "opacity-70"}`}>{habit.description}</div>
+              </div>
 
-            {habit.todayStatus === "done" ? (
-              <button
-                onClick={() => onUpdate(habit.id, "not_done")}
-                className="px-3 py-1 bg-red-400 text-white rounded"
-              >
-                Undo
-              </button>
-            ) : (
-              <button
-                onClick={() => onUpdate(habit.id, "done")}
-                className="px-3 py-1 bg-green-500 text-white rounded"
-              >
-                Mark Done
-              </button>
-            )}
-          </div>
+              {habit.todayStatus === "done" ? (
+                <motion.button
+                  onClick={() => onUpdate(habit.id, "not_done")}
+                  className="px-3 ml-70 mt-3 py-1 bg-red-400 text-white rounded"
+                  transition={{ duration: 0.45, ease: "easeInOut" }}
+                >
+                  Undo
+                </motion.button>
+              ) : (
+                <motion.button
+                  onClick={() => onUpdate(habit.id, "done")}
+                  className="px-3 py-1 mt-3 border-2 border-gray-300 text-blue-400 rounded"
+                >
+                  Mark complete
+                </motion.button>
+              )}
+            </div>
+          </motion.div>
         ))}
       </div>
     </div>

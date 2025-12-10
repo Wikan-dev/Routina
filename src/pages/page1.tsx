@@ -6,6 +6,7 @@ import Menu from "../component/menu";
 import WeeklyGrid from "../component/habit";
 import DailyCard from "../component/card";
 import jsonData from "../../backend/data/habits.json";
+import { User, CircleQuestionMark, CircleAlert } from "lucide-react";
 
 interface Habit {
   id: string;
@@ -95,6 +96,7 @@ export default function Page1() {
       id: h.id,
       title: h.title,
       description: h.description,
+      color: h.color,
       todayStatus: h.week[currentDayIndex],
     }))
     .filter((h) => h.todayStatus !== "none");
@@ -138,10 +140,10 @@ export default function Page1() {
           <Menu isOpen={menuOpen} onClose={() => setMenuOpen(false)}>
             <h2 className="text-xl font-bold mb-10 mt-10">Menu</h2>
             <ul className="space-y-10">
-              <li>Profile</li>
-              <li>Help</li>
-              <li>About</li>
-              <li>Toggle dark mode</li>
+              <motion.li className="font-medium cursor-pointer" whileHover={{scale: 1.05}}><User size={20} className="inline mr-2" /> Profile</motion.li>
+              <motion.li className="font-medium cursor-pointer" whileHover={{scale: 1.05}}><CircleQuestionMark size={20} className="inline mr-2" /> Help</motion.li>
+              <motion.li className="font-medium cursor-pointer" whileHover={{scale: 1.05}}><CircleAlert size={20} className="inline mr-2" /> About</motion.li>
+              <motion.li className="font-medium cursor-pointer" whileHover={{scale: 1.05}}>Toggle dark mode</motion.li>
             </ul>
           </Menu>
         </div>

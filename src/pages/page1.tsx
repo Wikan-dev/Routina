@@ -27,6 +27,7 @@ export default function Page1() {
   );
 
   const [currentDate, setCurrentDate] = useState(new Date());
+  const TanggalSekarang = new Date();
 
   const goPrevWeek = () => {
     setCurrentDate((prev) => {
@@ -177,14 +178,22 @@ export default function Page1() {
       </div>
 
       {/* DAILY CARD */}
-      <div className="w-[32%] h-[70%] absolute right-[35px] bottom-[35px] bg-white border-2 border-[#dfdfdf] rounded-2xl p-5">
-        <DailyCard
-          habits={todaysHabits}
-          currentDayIndex={currentDayIndex}
-          onUpdate={updateHabitStatus}
-          onPrevDay={goPrevDay}
-          onNextDay={goNextDay}
-        />
+      <div>
+        <div className="w-[32%] h-[30%] absolute right-[35px] top-[35px]">
+          <h1 className="font-bold text-4xl">{currentDate.toDateString()}</h1>
+          <div className="w-full h-3 rounded-full bg-gray-400">
+            <div className="w-[20%] h-3 rounded-full bg-blue-500"></div>
+          </div>
+        </div>
+        <div className="w-[32%] h-[70%] absolute right-[35px] bottom-[35px] bg-white border-2 border-[#dfdfdf] rounded-2xl p-5">
+          <DailyCard
+            habits={todaysHabits}
+            currentDayIndex={currentDayIndex}
+            onUpdate={updateHabitStatus}
+            onPrevDay={goPrevDay}
+            onNextDay={goNextDay}
+          />
+        </div>
       </div>
     </div>
   );

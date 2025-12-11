@@ -1,6 +1,7 @@
 import { useEffect, useState, type ChangeEvent } from "react";
 import axios from "axios";
 import { motion } from "motion/react";
+import { Link } from "react-router";
 
 export default function AddHabit() {
     const [title, setTitle] = useState("")
@@ -155,7 +156,7 @@ export default function AddHabit() {
                         )}
                     </div>
                     <div className="relative flex flex-row gap-10 mt-90 right-10">
-                        <motion.button onClick={handleAddHabit} className="relative right-0 text-white border-2 rounded-full bg-red-500 border-red-500 h-10 w-40" whileHover={{scale: 1.2}} whileTap={{scale: 0.9}}>Cencel</motion.button>
+                        <Link to='/user/:uid'><motion.button className="relative right-0 text-white border-2 rounded-full bg-red-500 border-red-500 h-10 w-40" whileHover={{scale: 1.2}} whileTap={{scale: 0.9}}>Cencel</motion.button></Link>
                         <motion.button onClick={handleAddHabit} className="relative right-0 text-blue-500 border-2 rounded-full border-blue-500 h-10 w-40" whileHover={{scale: 1.2}} whileTap={{scale: 0.9}}>Add Habit +</motion.button>
                     </div>
                 </div>

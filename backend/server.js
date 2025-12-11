@@ -60,6 +60,27 @@ const saveProfiles = (profiles) => {
   fs.writeFileSync(profileFilePath, JSON.stringify(profiles, null, 2));
 };
 
+const loadHabits = () => {
+  try {
+    if (fs.existsSync(habitsFilePath)) {
+      const fileContent = fs.readFileSync(habitsFilePath, "utf-8");
+      if (fileContent) {
+        return JSON.parse(fileContent);
+      }
+    }
+  } catch (err) {
+    console.error("Error loading habits:", err);
+  }
+  return { habits: [] };
+};
+
+const saveHabits = (data) => {
+  if (!data || !Array.isArray(data.habits)) {
+    throw new Error("Habits data must be an object with a 'habits' array property.");
+  }
+  fs.writeFileSync(habitsFilePath, JSON.stringify(data, null, 2));
+};
+
 const findProfileByUserId = (userId) => {
   const profiles = loadProfiles();
   return profiles.find((p) => p.user_id === userId);
@@ -90,6 +111,31 @@ const createProfileWithUserId = (userId, name) => {
 
 // ▶ ROUTES ===================================================
 
+app.put('/changeName', (req, res) => {
+  const { user_id, new_name } = req.body;
+  if (!user_id || !new_name) {
+    return res.status(400).json({ error: "user_id dan new_name diperlukan" });
+  }
+
+  try {
+    const profiles = loadProfiles();
+    const profileIndex = profiles.findIndex(p => p.user_id === user_id);
+
+    if (profileIndex === -1) {
+      return res.status(404).json({ error: "Profile tidak ditemukan" });
+    }
+
+    profiles[profileIndex].name = new_name;
+
+    saveProfiles(profiles);
+
+    res.json({ message: "Nama berhasil diubah", profile: profiles[profileIndex] });
+  } catch (err) {
+    console.error("Error changing name:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+})
+
 app.put('/habit', (req, res) => {
   const { id, title, description } = req.body;
   
@@ -97,31 +143,36 @@ app.put('/habit', (req, res) => {
     return res.status(400).json({ error: "ID habit diperlukan" });
   }
 
-  const raw = fs.readFileSync(habitsFilePath);
-  const data = JSON.parse(raw);
-  let changed = false;
+  try {
+    const data = loadHabits();
+    let changed = false;
+    const habitIndex = data.habits.findIndex(h => h.id === id);
+    
+    if (habitIndex === -1) {
+      return res.status(404).json({ error: "Habit tidak ditemukan" });
+    }
 
-  const habit = data.habits.find(h => h.id === id);
-  
-  if (!habit) {
-    return res.status(404).json({ error: "Habit tidak ditemukan" });
+    const habit = data.habits[habitIndex];
+
+    if (title) {
+      habit.title = title;
+      changed = true;
+    } 
+    if (description) {
+      habit.description = description;
+      changed = true;
+    }
+    if (!changed) {
+      return res.status(400).json({ error: "Tidak ada data untuk diupdate" });
+    }
+
+    saveHabits(data);
+
+    res.json({ message: "Habit updated", habit });
+  } catch (err) {
+    console.error("Error updating habit:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
-
-  if (title) {
-    habit.title = title;
-    changed = true;
-  } 
-  if (description) {
-    habit.description = description;
-    changed = true;
-  }
-  if (!changed) {
-    return res.status(400).json({ error: "Tidak ada data untuk diupdate" });
-  }
-
-  fs.writeFileSync(habitsFilePath, JSON.stringify(data, null, 2));
-
-  res.json({ message: "Habit updated", habit });  
 });
 
 app.put('/habit/done', (req, res) => {
@@ -130,27 +181,63 @@ app.put('/habit/done', (req, res) => {
     return res.status(400).json({ error: "ID dan day diperlukan" });
   }
 
-  const raw = fs.readFileSync(habitsFilePath);  
-  const data = JSON.parse(raw);
-  const habit = data.habits.find(h => h.id === id); 
+  try {
+    const data = loadHabits();
+    const habit = data.habits.find(h => h.id === id); 
 
-  if (!habit) {
-    return res.status(404).json({ error: "Habit tidak ditemukan" });
+    if (!habit) {
+      return res.status(404).json({ error: "Habit tidak ditemukan" });
+    }
+    if (day < 1 || day > 7) {
+      return res.status(400).json({ error: "Day harus antara 1-7" });
+    }
+
+    if (habit.week[day - 1] === "not_done") {
+      habit.week[day - 1] = "done";
+    } else {
+      return res.status(400).json({ error: "Habit sudah ditandai done" });
+    }
+
+    saveHabits(data);
+
+    res.json({ message: "Habit marked as done", habit });
+  } catch (err) {
+    console.error("Error marking habit as done:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
-  if (day < 1 || day > 7) {
-    return res.status(400).json({ error: "Day harus antara 1-7" });
-  }
-
-  if (habit.week[day - 1] === "not_done") {
-    habit.week[day - 1] = "done";
-  } else {
-    return res.status(400).json({ error: "Habit sudah ditandai done" });
-  }
-
-  fs.writeFileSync(habitsFilePath, JSON.stringify(data, null, 2));
-
-  res.json({ message: "Habit marked as done", habit });
 })
+
+app.put('/habit/undo', (req, res) => {
+  const { id, day } = req.body;
+  if (!id || !day) {
+    return res.status(400).json({ error: "ID dan day diperlukan" });
+  }
+
+  try {
+    const data = loadHabits();
+    const habit = data.habits.find(h => h.id === id); 
+
+    if (!habit) {
+      return res.status(404).json({ error: "Habit tidak ditemukan" });
+    }
+    if (day < 1 || day > 7) {
+      return res.status(400).json({ error: "Day harus antara 1-7" });
+    }
+
+    if (habit.week[day - 1] === "done") {
+      habit.week[day - 1] = "not_done";
+    } else {
+      return res.status(400).json({ error: "Habit tidak dalam status 'done'" });
+    }
+
+    saveHabits(data);
+
+    res.json({ message: "Habit status reverted to not_done", habit });
+  } catch (err) {
+    console.error("Error undoing habit:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 
 app.post("/auth/add_habit", async (req, res) => {
@@ -197,12 +284,9 @@ app.post("/auth/add_habit", async (req, res) => {
       created_at: new Date().toISOString(),
     };
 
-    const raw = fs.readFileSync(habitsFilePath);
-    const data = JSON.parse(raw);
-
+    const data = loadHabits();
     data.habits.push(habit);
-
-    fs.writeFileSync(habitsFilePath, JSON.stringify(data, null, 2));
+    saveHabits(data);
 
     res.json({ 
       message: "Habit berhasil ditambahkan", 

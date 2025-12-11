@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
+import axios from "axios";
 
 
 function hexToRgb(hex: string) {
@@ -31,7 +32,42 @@ interface HabitToday {
 const Card: React.FC<DailyCardProps> = ({
   habits,
   onUpdate,
+  currentDayIndex,
 }) => {
+
+  const handleMarkComplete = async (habitId: string) => {
+    try {
+      await axios.put('http://localhost:4000/habit/done', {
+        id: habitId,
+        day: currentDayIndex + 1,
+      });
+      onUpdate(habitId, "done");
+    } catch (err: any) {
+      console.error("Failed to mark habit as done:", err);
+      if (err.response) {
+        alert(`Error: ${err.response.data.error}`);
+      } else {
+        alert("An error occurred.");
+      }
+    }
+  };
+
+  const handleUndo = async (habitId: string) => {
+    try {
+      await axios.put('http://localhost:4000/habit/undo', {
+        id: habitId,
+        day: currentDayIndex + 1,
+      });
+      onUpdate(habitId, "not_done");
+    } catch (err: any) {
+      console.error("Failed to undo habit:", err);
+      if (err.response) {
+        alert(`Error: ${err.response.data.error}`);
+      } else {
+        alert("An error occurred while undoing.");
+      }
+    }
+  };
 
   return (
     <div className="flex-1">
@@ -59,15 +95,15 @@ const Card: React.FC<DailyCardProps> = ({
 
               {habit.todayStatus === "done" ? (
                 <motion.button
-                  onClick={() => onUpdate(habit.id, "not_done")}
-                  className="px-3 ml-70 mt-4 py-1 text-white rounded"
+                  onClick={() => handleUndo(habit.id)}
+                  className="px-3 ml-auto mt-4 py-1 text-white rounded"
                   transition={{ duration: 0.45, ease: "easeInOut" }}
                 >
                   Undo
                 </motion.button>
               ) : (
                 <motion.button
-                  onClick={() => onUpdate(habit.id, "done")}
+                  onClick={() => handleMarkComplete(habit.id)}
                   className="px-3 py-1 mt-3 border-2 bg-white border-gray-300 text-blue-400 rounded"
                 >
                   Mark complete

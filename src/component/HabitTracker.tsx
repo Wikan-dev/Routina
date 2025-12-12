@@ -1,5 +1,5 @@
-import { useState } from "react";
-import jsonData from "../../backend/data/habits.json"; // sesuaikan path
+import { useState, useEffect } from "react";
+import Card from "./card"; // Impor komponen Card
 
 interface Habit {
   id: string;
@@ -10,24 +10,47 @@ interface Habit {
   created_at: string;
 }
 
-
 const HabitTracker = () => {
-  const [habits, setHabits] = useState<Habit[]>(jsonData.habits);
+  const [habits, setHabits] = useState<Habit[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // current day (0 = Sun, 1 = Mon, ...)
+  useEffect(() => {
+    const fetchHabits = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/habits");
+        if (!response.ok) {
+          throw new Error("Gagal mengambil data kebiasaan");
+        }
+        const data = await response.json();
+        setHabits(data.habits);
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("Terjadi kesalahan yang tidak diketahui");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHabits();
+  }, []);
+
   const [currentDayIndex, setCurrentDayIndex] = useState<number>(
     new Date().getDay()
   );
 
-  // Get habits that have something on today (filter 'none')
   const todaysHabits = habits
     .map((h) => ({
       ...h,
       todayStatus: h.week[currentDayIndex],
+      // Pastikan semua properti yang dibutuhkan Card ada
+      color: h.color || "#000000", // default color jika tidak ada
     }))
     .filter((h) => h.todayStatus !== "none");
 
-  // Update habit status (sync weekly grid & daily card)
   const updateHabitStatus = (
     habitId: string,
     newStatus: "done" | "not_done" | "none"
@@ -35,16 +58,17 @@ const HabitTracker = () => {
     setHabits((prev) =>
       prev.map((h) => {
         if (h.id !== habitId) return h;
-
         const updatedWeek = [...h.week];
         updatedWeek[currentDayIndex] = newStatus;
-
-        return { ...h, week: updatedWeek };
+        return { ...h, week: updatedWeek as ("done" | "not_done" | "none")[] };
       })
     );
   };
 
-  // Navigate between days
+  const handleHabitDeleted = (habitId: string) => {
+    setHabits((prev) => prev.filter((h) => h.id !== habitId));
+  };
+
   const goPrevDay = () => {
     setCurrentDayIndex((prev) => (prev === 0 ? 6 : prev - 1));
   };
@@ -55,19 +79,19 @@ const HabitTracker = () => {
 
   const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
+  if (loading) return <div>Memuat...</div>;
+  if (error) return <div>Error: {error}</div>;
+
   return (
     <div className="flex gap-8 p-6 text-black">
-
       {/* LEFT WEEKLY GRID */}
       <div>
         <h2 className="font-bold text-xl mb-3">Weekly View</h2>
-
         <div className="grid grid-cols-7 gap-2 text-center mb-2">
           {dayLabels.map((label) => (
             <div key={label} className="font-semibold">{label}</div>
           ))}
         </div>
-
         {habits.map((habit) => (
           <div key={habit.id} className="grid grid-cols-7 gap-2 mb-3">
             {habit.week.map((status, dayIdx) => (
@@ -87,50 +111,14 @@ const HabitTracker = () => {
       </div>
 
       {/* RIGHT DAILY CARD */}
-      <div className="flex-1">
-        <div className="flex justify-between items-center mb-4">
-          <button onClick={goPrevDay}>◀</button>
-          <h2 className="text-lg font-bold">{dayLabels[currentDayIndex]}</h2>
-          <button onClick={goNextDay}>▶</button>
-        </div>
-
-        <h3 className="font-semibold mb-3">Today’s Habits</h3>
-
-        {todaysHabits.length === 0 && (
-          <p className="opacity-60">Ga ada habit untuk hari ini 😴</p>
-        )}
-
-        <div className="flex flex-col gap-4">
-          {todaysHabits.map((habit) => (
-            <div
-              key={habit.id}
-              className="p-4 rounded-xl border shadow-sm flex justify-between items-center"
-            >
-              <div>
-                <div className="font-bold">{habit.title}</div>
-                <div className="text-sm opacity-70">{habit.description}</div>
-              </div>
-
-              {habit.todayStatus === "done" ? (
-                <button
-                  onClick={() => updateHabitStatus(habit.id, "not_done")}
-                  className="px-3 py-1 bg-red-400 text-white rounded"
-                >
-                  Undo
-                </button>
-              ) : (
-                <button
-                  onClick={() => updateHabitStatus(habit.id, "done")}
-                  className="px-3 py-1 bg-green-500 text-white rounded"
-                >
-                  Mark Done
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
+      <Card
+        habits={todaysHabits}
+        currentDayIndex={currentDayIndex}
+        onUpdate={updateHabitStatus}
+        onHabitDeleted={handleHabitDeleted}
+        onPrevDay={goPrevDay}
+        onNextDay={goNextDay}
+      />
     </div>
   );
 };

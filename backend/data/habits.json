@@ -1,22 +1,6 @@
 {
   "habits": [
     {
-      "id": "07cb09b5b9722404",
-      "title": "baca buku",
-      "description": "membaca buku setiap hari selama 2 jam maksimal",
-      "week": [
-        "not_done",
-        "not_done",
-        "not_done",
-        "not_done",
-        "not_done",
-        "not_done",
-        "not_done"
-      ],
-      "color": "#00E5FF",
-      "created_at": "2025-12-11T06:58:18.363Z"
-    },
-    {
       "id": "7c7a0301eb6d0efa",
       "title": "gdhjsabd",
       "description": "asdasdasd",
@@ -31,70 +15,6 @@
       ],
       "color": "#00E5FF",
       "created_at": "2025-12-11T09:26:33.400Z"
-    },
-    {
-      "id": "6d0fc45c7e09051a",
-      "title": "bubsuduas",
-      "description": "asdasdhbjasbdcvndsbjk",
-      "week": [
-        "none",
-        "none",
-        "none",
-        "none",
-        "not_done",
-        "none",
-        "none"
-      ],
-      "color": "#FF00EE",
-      "created_at": "2025-12-11T09:26:56.423Z"
-    },
-    {
-      "id": "959767f0b1f95c84",
-      "title": "asdasda",
-      "description": "asdasdasd",
-      "week": [
-        "not_done",
-        "none",
-        "not_done",
-        "not_done",
-        "none",
-        "not_done",
-        "not_done"
-      ],
-      "color": "#FFA600",
-      "created_at": "2025-12-11T14:24:27.556Z"
-    },
-    {
-      "id": "525eefa63bd2cef0",
-      "title": "asdasdasd",
-      "description": "asdasdasd",
-      "week": [
-        "none",
-        "none",
-        "not_done",
-        "none",
-        "done",
-        "not_done",
-        "not_done"
-      ],
-      "color": "#FF00EE",
-      "created_at": "2025-12-11T14:24:48.955Z"
-    },
-    {
-      "id": "358d09cdc069387c",
-      "title": "asdasdasd",
-      "description": "asdasdasd",
-      "week": [
-        "none",
-        "none",
-        "not_done",
-        "none",
-        "not_done",
-        "not_done",
-        "not_done"
-      ],
-      "color": "#FF00EE",
-      "created_at": "2025-12-11T14:24:51.657Z"
     }
   ]
 }

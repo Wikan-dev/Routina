@@ -111,6 +111,37 @@ const createProfileWithUserId = (userId, name) => {
 
 // ▶ ROUTES ===================================================
 
+app.get("/habits", (req, res) => {
+  try {
+    const habitsData = loadHabits();
+    res.json(habitsData);
+  } catch (err) {
+    console.error("Error loading habits:", err);
+    res.status(500).json({ message: "Gagal memuat data habits" });
+  }
+});
+
+app.delete("/habit/delete/:id", (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const habitsData = loadHabits();
+    const habitIndex = habitsData.habits.findIndex((h) => h.id === id);
+
+    if (habitIndex === -1) {
+      return res.status(404).json({ message: "Habit tidak ditemukan" });
+    }
+
+    habitsData.habits.splice(habitIndex, 1);
+    saveHabits(habitsData);
+
+    res.json({ message: "Habit berhasil dihapus" });
+  } catch (err) {
+    console.error("Error deleting habit:", err);
+    res.status(500).json({ message: "Gagal menghapus habit" });
+  }
+});
+
 app.put('/changeName', (req, res) => {
   const { user_id, new_name } = req.body;
   if (!user_id || !new_name) {

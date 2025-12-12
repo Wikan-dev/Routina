@@ -23,9 +23,33 @@ interface Habit {
 }
 
 export default function Page1() {
-  // ⬇ STATE HABITS DI PAGE INI
-  const [habits, setHabits] = useState<Habit[]>(jsonData.habits);
+  const [habits, setHabits] = useState<Habit[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [changeNameState, setChangeNameState] = useState(false);
+
+  useEffect(() => {
+    const fetchHabits = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/habits");
+        if (!response.ok) {
+          throw new Error("Gagal mengambil data kebiasaan");
+        }
+        const data = await response.json();
+        setHabits(data.habits);
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("Terjadi kesalahan yang tidak diketahui");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHabits();
+  }, []);
 
   // Hari sekarang
   const [currentDayIndex, setCurrentDayIndex] = useState<number>(
@@ -170,6 +194,11 @@ export default function Page1() {
     navigate('/login'); // Arahkan ke halaman login setelah logout
   };
 
+  const handleDeleteHabit = (habitId: string) => {
+  setHabits(prev => prev.filter(h => h.id !== habitId));
+};
+
+
   return (
     <div className="bg-white dark:bg-gray-900 w-full h-screen overflow-hidden flex flex-col lg:px-[35px] px-5">
       {changeNameState && <ChangeName setChangeNameState={setChangeNameState} />}
@@ -268,6 +297,7 @@ export default function Page1() {
             habits={todaysHabits}
             currentDayIndex={currentDayIndex}
             onUpdate={updateHabitStatus}
+            onDelete={handleDeleteHabit}
             onPrevDay={goPrevDay}
             onNextDay={goNextDay}
           />

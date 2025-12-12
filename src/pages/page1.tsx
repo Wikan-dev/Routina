@@ -2,15 +2,16 @@ import "../App.css";
 import arrow from "../assets/icon/arrow.svg";
 import { motion } from "motion/react";
 import { useState, useEffect } from "react";
-import Menu from "../component/menu";
+import Menus from "../component/menu";
 import WeeklyGrid from "../component/habit";
 import DailyCard from "../component/card";
 import jsonData from "../../backend/data/habits.json";
-import { User, CircleQuestionMark, CircleAlert } from "lucide-react";
+import { User, CircleQuestionMark, CircleAlert, LogOut, Menu, ChevronLeft } from "lucide-react";
 // import AddHabit from "../component/add_habit";
 import { Link } from "react-router";
-import MenuIcon from "../assets/icon/menu.svg";
 import ChangeName from "../component/changeName";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../client/supabaseClient";
 
 interface Habit {
   id: string;
@@ -162,24 +163,40 @@ export default function Page1() {
 
   console.log(changeNameState)
 
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/login'); // Arahkan ke halaman login setelah logout
+  };
+
   return (
-    <div className="bg-white w-full h-screen flex flex-col lg:px-[35px] px-5">
+    <div className="bg-white dark:bg-gray-900 w-full h-screen overflow-hidden flex flex-col lg:px-[35px] px-5">
       {changeNameState && <ChangeName setChangeNameState={setChangeNameState} />}
 
         <div
-          className="rounded-full border-2 border-[#DFDFDF] w-20 h-20 bottom-20 right-5 z-40 bg-white cursor-pointer lg:hidden flex absolute p-4"
+          className="fixed rounded-full border-2 border-[#DFDFDF] w-12 h-12 bottom-10 right-5 z-40 bg-white dark:bg-gray-900 cursor-pointer lg:hidden flex absolute p-4"
           onClick={() => setMenuOpen(!menuOpen)}
         >
-          <Menu isOpen={menuOpen} onClose={() => setMenuOpen(false)}>
+          <Menus isOpen={menuOpen} onClose={() => setMenuOpen(false)}>
             <h2 className="text-xl font-bold mb-10 mt-10">Menu</h2>
             <ul className="space-y-10">
               <motion.li onClick={() => setChangeNameState(!changeNameState)} className="font-medium cursor-pointer" whileHover={{scale: 1.05}}><User size={20} className="inline mr-2" /> Profile</motion.li>
               <motion.li className="font-medium cursor-pointer" whileHover={{scale: 1.05}}><CircleQuestionMark size={20} className="inline mr-2" /> Help</motion.li>
               <motion.li className="font-medium cursor-pointer" whileHover={{scale: 1.05}}><CircleAlert size={20} className="inline mr-2" /> About</motion.li>
               <motion.li className="font-medium cursor-pointer" whileHover={{scale: 1.05}}>Toggle dark mode</motion.li>
+              <Link to={'/addHabit'}>
+                <motion.li className="font-medium cursor-pointer" whileHover={{scale: 1.05}}>Add Habit +</motion.li>
+              </Link>
+              <button
+              onClick={handleLogout}
+              className="absolute bottom-0 w-auto text-left py-12 text-md text-red-500 font-semibold cursor-pointer"
+              >
+                Logout <LogOut size={20} className="inline ml-2 color-red-500" />
+              </button>
             </ul>
-          </Menu>
-          <img src={MenuIcon} alt="menu" />
+          </Menus>
+            <Menu size={30} className="absolute right-2 bottom-2 inline color-[#DFDFDF] dark:text-white"/>
         </div>
 
       {/* Avatar + Menu */}
@@ -188,35 +205,42 @@ export default function Page1() {
           className="rounded-full border-2 border-[#DFDFDF] w-20 h-20 bg-[#DFDFDF] cursor-pointer hidden lg:flex"
           onClick={() => setMenuOpen(!menuOpen)}
         >
-          <Menu isOpen={menuOpen} onClose={() => setMenuOpen(false)}>
+          <Menus isOpen={menuOpen} onClose={() => setMenuOpen(false)}>
             <h2 className="text-xl font-bold mb-10 mt-10">Menu</h2>
-            <ul className="space-y-10">
+            <ul className="space-y-10 h-screen">
               <motion.button onClick={() => setChangeNameState(!changeNameState)}className="font-medium cursor-pointer" whileHover={{scale: 1.05}}><User size={20} className="inline mr-2" /> Profile</motion.button>
               <motion.li className="font-medium cursor-pointer" whileHover={{scale: 1.05}}><CircleQuestionMark size={20} className="inline mr-2" /> Help</motion.li>
               <motion.li className="font-medium cursor-pointer" whileHover={{scale: 1.05}}><CircleAlert size={20} className="inline mr-2" /> About</motion.li>
               <motion.li className="font-medium cursor-pointer" whileHover={{scale: 1.05}}>Toggle dark mode</motion.li>
+              <button
+              onClick={handleLogout}
+              className="absolute bottom-0 w-auto text-left py-12 text-md text-red-500 font-semibold cursor-pointer"
+              >
+                Logout <LogOut size={20} className="inline ml-2 color-red-500" />
+              </button>
             </ul>
-          </Menu>
+          </Menus>
         </div>
-
-        <h1 className="lg:text-[30px] text-4xl font-bold">Hey There, {username}</h1>
+        <h1 className="text-[30px] text-4xl text-white dark:text-white font-bold relative">Hey There, {username}</h1>
+        <h1 className="text-[20px] font-bold fixed z-7 lg:hidden bg-white dark:bg-gray-900 py-5 left-0 px-5 dark:text-white w-full h-60 top-0">Hey There, {username}</h1>
       </div>
         <div className="w-[60%] h-auto relative mt-50 left-6 lg:flex hidden justify-between items-center flex-row">
             <div className='flex flex-row items-center gap-9'>
                 <div className='flex flex-row gap-3'>
                     <motion.button className='rounded-full h-12 w-12 border-2 border-gray-300 grid place-items-center cursor-pointer' whileHover={{scale: 1.1}} whileTap={{scale: 0.95}} onClick={goPrevWeek}>
-                        <img src={arrow} alt="arrow left" className='w-4 h-auto' />
+                        <ChevronLeft size={20} className="text-black dark:text-white" />
                         </motion.button>
-                        <motion.button className='rounded-full h-12 w-12 border-2 border-gray-300 grid place-items-center cursor-pointer' whileHover={{scale: 1.1}} whileTap={{scale: 0.95}} onClick={goNextWeek}>                            <img src={arrow} alt="arrow right" className='w-4 h-auto' style={{ transform: "rotate(180deg)" }} />
+                        <motion.button className='rounded-full h-12 w-12 border-2 border-gray-300 grid place-items-center cursor-pointer' whileHover={{scale: 1.1}} whileTap={{scale: 0.95}} onClick={goNextWeek}>
+                          <ChevronLeft size={20} className="text-black dark:text-white" style={{ transform: "rotate(180deg)" }} />
                         </motion.button>
                 </div>
-                <h1 className='text-black text-[18px] font-bold w-50'>{weekDisplay}</h1>
+                <h1 className='text-black dark:text-white text-[18px] font-bold w-50'>{weekDisplay}</h1>
             </div>
             <Link to={'/addHabit'}>
-              <motion.button className="rounded-full border-2 border-gray-300 w-50 h-12 ml-auto text-blue-500 cursor-pointer" whileHover={{scale: 1.1}} whileTap={{scale:0.95}}>Add habit +</motion.button>
+              <motion.button className="rounded-full border-2 border-gray-300 w-50 h-12 ml-auto text-blue-500 cursor-pointer sm:absolute lg:relative sm:bottom-0 sm:show" whileHover={{scale: 1.1}} whileTap={{scale:0.95}}>Add habit +</motion.button>
             </Link>
             {/* Progress Bar */}
-            <div className="absolute mt-40 w-full">
+            <div className="lg:absolute mt-40 w-full sm:fixed">
                     <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
                         <div className='h-full bg-blue-500 transition-all duration-300' style={{width: `${weeklyPercentage}%`}}></div>
                     </div>
@@ -225,21 +249,21 @@ export default function Page1() {
 
 
       {/* WEEKLY GRID */} 
-      <div className="mt-20 ml-6 lg:block hidden">
+      <div className="mt-20 ml-6 lg:block hidden text-black dark:text-white">
         <WeeklyGrid habits={habits} />
       </div>
 
       {/* DAILY CARD */}
       <div>
-        <div className="lg:w-[32%] lg:h-[30%] lg:absolute mt-20 lg:mt-0 w-full lg:right-[35px] lg:top-[35px]">
-          <h1 className="font-bold text-xl lg:text-4xl">{TanggalSekarang.toDateString()}</h1>
-          <div className="w-full h-3 rounded-full bg-gray-400 relative">
-            <div className="h-3 rounded-full bg-blue-500 lg:mt-5 mt-2 " style={{width: `${dailyPercentage}%`}}>
-              <h1 className=" top-3 lg:right-2 -right-3 absolute font-bold lg:text-xl lg:w-36 w-30">{dailyPercentage.toFixed(0)}% Complete</h1>
+        <div className="lg:w-[32%] lg:h-[30%] lg:absolute mt-20 lg:mt-0 h-auto w-full lg:right-[35px] lg:top-[35px] sm:flex sm:flex-col z-8">
+          <h1 className="font-bold text-xl lg:text-4xl lg:relative fixed z-8 lg:top-2 text-black dark:text-white">{TanggalSekarang.toDateString()}</h1>
+          <div className="lg:relative lg:top-1 lg:w-full w-[90%] h-3 rounded-full z-8 bg-gray-400 fixed mt-10">
+            <div className="h-3 rounded-full bg-blue-500 mt-0 text-black dark:text-white" style={{width: `${dailyPercentage}%`}}>
+              <h1 className="lg:absolute lg:top-5 top-3 lg:right-2 -right-3 absolute font-bold lg:text-xl lg:w-auto w-30 text-black dark:text-white">{dailyPercentage.toFixed(0)}% Complete</h1>
             </div>
           </div>
         </div>
-        <div className="w-full lg:w-[32%] lg:h-[70%] mt-15 lg:absolute lg:right-[35px] lg:bottom-[35px] bg-white lg:border-2 border-[#dfdfdf] rounded-2xl p-5">
+        <div className="overflow-scroll bg-white dark:bg-gray-900 scrlnone w-full h-[55%] lg:w-[32%] lg:h-[70%] lg:mt-15 mt-50 lg:absolute lg:right-[35px] lg:bottom-[35px] bg-white dark:bg-gray-900 lg:border-2 border-[#dfdfdf] rounded-2xl p-5">
           <DailyCard
             habits={todaysHabits}
             currentDayIndex={currentDayIndex}

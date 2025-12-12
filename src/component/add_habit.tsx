@@ -94,7 +94,7 @@ export default function AddHabit() {
             <div className="lg:absolute relative w-full h-screen items-start flex lg:flex-row flex-col mt-30 overflow-hidden">
                 <textarea value={description} onChange={handleDescription}  placeholder="description" className="relative p-5 placeholder-gray-500/30 font-sans font-small text-[18px] lg:w-[70%] w-full h-[65%] border-2 rounded-xl border-gray-500/30 text-start top-10 resize-none" ></textarea>
                 <div className="relative h-screen items-center flex flex-col lg:px-20 lg:top-10 top-20">
-                    <div className="relative lg:left-0 justify-between lg:gap-32 gap-25 flex flex-row">
+                    <div className="relative lg:-left-11 justify-between lg:gap-34 gap-25 flex flex-row">
                         <span className="font-bold text-[20px]">Colour</span>
                         <button
                         onClick={()=> setShowColors(prev => !prev)}

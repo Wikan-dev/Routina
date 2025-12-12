@@ -132,7 +132,7 @@ const Card: React.FC<DailyCardProps> = ({
         <p className="opacity-60">Ga ada habit untuk hari ini 😴</p>
       )}
 
-      <div className="flex flex-col gap-4 mt-10 bg-white dark:bg-gray-900 p-4">
+      <div className="relative flex flex-col gap-4 mt-10 bg-white dark:bg-gray-900 p-4">
         {habits.map((habit) => (
           <motion.div
             key={habit.id}
@@ -188,8 +188,7 @@ const Card: React.FC<DailyCardProps> = ({
                   {habit.description}
                 </div>
               </div>
-
-              <div className="flex items-center gap-2">
+              <div className="flex relative items-center mt-20 gap-2">
                 {habit.todayStatus === "done" ? (
                   <motion.button
                     onClick={() => handleUndo(habit.id)}
@@ -201,21 +200,22 @@ const Card: React.FC<DailyCardProps> = ({
                 ) : (
                   <motion.button
                     onClick={() => handleMarkComplete(habit.id)}
-                    className="cursor-pointer px-3 py-1 border-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-blue-400 rounded"
+                    className="cursor-pointer px-3 py-1 w-full border-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-blue-400 rounded"
                     whileHover={{ scale: 1.01 }}
                   >
                     Mark complete
                   </motion.button>
                 )}
-                <div className="relative">
-                  <button
-                   onClick={() => toggleMenu(habit.id)}
-  className="p-2 rounded-full hover:bg-gray-200 habit-menu-btn"
-                  >
-                    <EllipsisVertical className="w-5 h-5" />
-                  </button>
+              </div>
+              <button
+                onClick={() => toggleMenu(habit.id)}
+                className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 habit-menu-btn"
+                >
+                  <EllipsisVertical className="w-5 h-5 inline dark:text-white text-black" />
+              </button>
+              <div className="relative">
                   {openMenuId === habit.id && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+                    <div className="absolute right-0 mt-10 mr-10 w-48 bg-white rounded-md shadow-lg z-10">
                       <button
                         onClick={() => handleDelete(habit.id)}
                         className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
@@ -224,8 +224,7 @@ const Card: React.FC<DailyCardProps> = ({
                       </button>
                     </div>
                   )}
-                </div>
-              </div>
+                </div>  
             </div>
           </motion.div>
         ))}
